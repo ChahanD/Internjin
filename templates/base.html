@@ -61,6 +61,17 @@
                         Us</a>
                     {% endif %}
 
+                    {% if role == 'student' %}
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle">Français ▾</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="?lang=fr">Français</a></li>
+                            <li><a href="?lang=en">English</a></li>
+                            <li><a href="?lang=jp">日本語</a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+
                     {% if current_user.is_authenticated %}
                     <div class="dropdown">
                         <a href="#" class="dropdown-toggle" style="color: var(--color-primary);">{{ current_user.name }}
@@ -72,17 +83,6 @@
                     </div>
                     {% else %}
                     <a href="/login" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">Login</a>
-                    {% endif %}
-
-                    {% if role == 'student' %}
-                    <div class="dropdown">
-                        <a href="#" class="dropdown-toggle">Français ▾</a>
-                        <ul class="dropdown-menu">
-                            <li><a href="?lang=fr">Français</a></li>
-                            <li><a href="?lang=en">English</a></li>
-                            <li><a href="?lang=jp">日本語</a></li>
-                        </ul>
-                    </div>
                     {% endif %}
                 </div>
             </nav>

@@ -4,32 +4,58 @@
 <section class="hero">
     <div class="container">
         <div class="hero-content">
+            {% if role == 'student' %}
             <h1>Launch Your Career <br>in Japan</h1>
             <p>The premium gateway connecting ambitious French students with top Japanese companies. Experience a new
                 culture, build your future.</p>
             <div style="display: flex; gap: 1rem; justify-content: center;">
                 <a href="/offers" class="btn btn-primary">Browse Offers</a>
-                <a href="#" class="btn btn-outline">For Companies</a>
+                <a href="/companies" class="btn btn-outline">Partner Companies</a>
             </div>
+            {% else %}
+            <h1>Recruit Top <br>French Talent</h1>
+            <p>Access a curated pool of engineering and business students from France's leading "Grandes Écoles".
+                Simplify your recruitment process.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="/companies/solutions" class="btn btn-primary">Our Solutions</a>
+                <a href="/contact" class="btn btn-outline">Contact Us</a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>
 
 <section class="container">
     <div class="grid">
+        {% if role == 'student' %}
         <div class="card">
             <h3>For Students</h3>
             <p>Access exclusive internship opportunities in Tokyo, Osaka, and beyond. We support you from application to
                 arrival.</p>
         </div>
         <div class="card">
-            <h3>For Companies</h3>
-            <p>Recruit top-tier engineering and business talent from France's leading "Grandes Écoles".</p>
+            <h3>Why Japan?</h3>
+            <p>Immerse yourself in a unique culture, learn cutting-edge technology, and boost your international career.
+            </p>
         </div>
         <div class="card">
             <h3>Seamless Process</h3>
             <p>Visa support, housing assistance, and cultural onboarding to ensure a smooth transition.</p>
         </div>
+        {% else %}
+        <div class="card">
+            <h3>Top Profiles</h3>
+            <p>Engineers, Business Developers, and Marketers from France's top 5% universities.</p>
+        </div>
+        <div class="card">
+            <h3>Why French Talent?</h3>
+            <p>Highly skilled, adaptable, and multilingual candidates ready to contribute to your global growth.</p>
+        </div>
+        <div class="card">
+            <h3>Full Support</h3>
+            <p>We handle visa sponsorship, onboarding, and administrative tasks so you can focus on hiring.</p>
+        </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
