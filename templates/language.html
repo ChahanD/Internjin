@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Language | Internjin{% endblock %}
+
+{% block content %}
+<div class="container"
+    style="min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <h1 style="margin-bottom: 3rem; text-align: center;">Choose your language</h1>
+
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center;">
+        <a href="/" class="lang-card"
+            style="display: block; background: var(--color-card-bg); padding: 3rem; border-radius: 20px; border: 1px solid var(--color-border); text-align: center; min-width: 250px; transition: all 0.3s ease; text-decoration: none; color: white;">
+            <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">🇫🇷</span>
+            <h2 style="margin: 0;">Français</h2>
+        </a>
+
+        <a href="/" class="lang-card"
+            style="display: block; background: var(--color-card-bg); padding: 3rem; border-radius: 20px; border: 1px solid var(--color-border); text-align: center; min-width: 250px; transition: all 0.3s ease; text-decoration: none; color: white;">
+            <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">🇺🇸</span>
+            <h2 style="margin: 0;">English</h2>
+        </a>
+
+        <a href="/" class="lang-card"
+            style="display: block; background: var(--color-card-bg); padding: 3rem; border-radius: 20px; border: 1px solid var(--color-border); text-align: center; min-width: 250px; transition: all 0.3s ease; text-decoration: none; color: white;">
+            <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">🇯🇵</span>
+            <h2 style="margin: 0;">日本語</h2>
+        </a>
+    </div>
+</div>
+
+<style>
+    .lang-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--color-primary);
+        box-shadow: 0 10px 30px rgba(255, 46, 99, 0.2);
+    }
+</style>
+{% endblock %}

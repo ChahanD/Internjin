@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Internjin{% endblock %}
+
+{% block content %}
+<div class="container" style="min-height: 80vh; display: flex; align-items: center; justify-content: center;">
+    <div
+        style="background: var(--color-card-bg); padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border); width: 100%; max-width: 400px;">
+        <h1 style="text-align: center; margin-bottom: 2rem;">Welcome Back</h1>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div
+            style="background: rgba(255, 46, 99, 0.1); color: var(--color-primary); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/login">
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">Email</label>
+                <input type="email" name="email" required
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">Password</label>
+                <input type="password" name="password" required
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Log In</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 1.5rem; color: #8892b0;">
+            Don't have an account? <a href="/register" style="color: var(--color-primary);">Sign up</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Internjin | French Talent for Japan{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">Intern<span>jin</span></a>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/offers">Offers</a></li>
+                    <li><a href="/language">Language</a></li>
+                </ul>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    {% if current_user.is_authenticated %}
+                    <span style="font-size: 0.9rem; color: #8892b0;">Hi, {{ current_user.name }}</span>
+                    <a href="/logout" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">Logout</a>
+                    {% else %}
+                    <a href="/login" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">Login</a>
+                    <a href="/register" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">Sign
+                        Up</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Internjin. Connecting France & Japan.</p>
+        </div>
+    </footer>
+</body>
+
+</html>
