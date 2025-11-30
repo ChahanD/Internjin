@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from extensions import db
@@ -18,6 +18,16 @@ from models import User
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+@app.context_processor
+def inject_role():
+    return dict(role=session.get('role', 'student'))
+
+@app.route('/switch_role/<role>')
+def switch_role(role):
+    if role in ['student', 'recruiter']:
+        session['role'] = role
+    return redirect(request.referrer or url_for('index'))
 
 @app.route('/')
 def index():
@@ -53,6 +63,22 @@ def offers():
         }
     ]
     return render_template('offers.html', offers=offers_data)
+
+@app.route('/companies')
+def companies_list():
+    return render_template('companies_list.html')
+
+@app.route('/companies/solutions')
+def company_solutions():
+    return render_template('company_solutions.html')
+
+@app.route('/companies/packs')
+def company_packs():
+    return render_template('company_packs.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
 
 @app.route('/language')
 def language():

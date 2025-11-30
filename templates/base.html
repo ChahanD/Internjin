@@ -17,23 +17,72 @@
 </head>
 
 <body>
-    <header>
+    <!-- Top Bar Role Switcher -->
+    <div
+        style="background: #05070c; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); position: fixed; width: 100%; top: 0; z-index: 101;">
+        <div class="container" style="display: flex; justify-content: flex-end; gap: 1rem; font-size: 0.8rem;">
+            <a href="/switch_role/student"
+                style="color: {{ 'var(--color-primary)' if role == 'student' else '#8892b0' }}; font-weight: {{ 'bold' if role == 'student' else 'normal' }};">Student</a>
+            <span style="color: #2a3b55;">|</span>
+            <a href="/switch_role/recruiter"
+                style="color: {{ 'var(--color-primary)' if role == 'recruiter' else '#8892b0' }}; font-weight: {{ 'bold' if role == 'recruiter' else 'normal' }};">Recruiter</a>
+        </div>
+    </div>
+
+    <header style="top: 35px;"> <!-- Offset for top bar -->
         <div class="container">
             <nav>
-                <a href="/" class="logo">Intern<span>jin</span></a>
+                <a href="/" class="logo">
+                    <img src="{{ url_for('static', filename='images/logo_full_white.png') }}" alt="Internjin"
+                        style="height: 40px;">
+                </a>
+
                 <ul class="nav-links">
-                    <li><a href="/">Home</a></li>
+                    {% if role == 'student' %}
                     <li><a href="/offers">Offers</a></li>
-                    <li><a href="/language">Language</a></li>
+                    <li><a href="/companies">Companies</a></li>
+                    {% else %}
+                    <li><a href="/companies/solutions">Solutions</a></li>
+                    <li><a href="/companies/packs">Our Packs</a></li>
+                    {% endif %}
                 </ul>
+
                 <div style="display: flex; gap: 1rem; align-items: center;">
+                    {% if role == 'recruiter' %}
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle">Français ▾</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="?lang=fr">Français</a></li>
+                            <li><a href="?lang=en">English</a></li>
+                            <li><a href="?lang=jp">日本語</a></li>
+                        </ul>
+                    </div>
+                    <a href="/contact" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">Contact
+                        Us</a>
+                    {% endif %}
+
                     {% if current_user.is_authenticated %}
-                    <span style="font-size: 0.9rem; color: #8892b0;">Hi, {{ current_user.name }}</span>
-                    <a href="/logout" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">Logout</a>
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle" style="color: var(--color-primary);">{{ current_user.name }}
+                            ▾</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">My Account</a></li>
+                            <li><a href="/logout">Logout</a></li>
+                        </ul>
+                    </div>
                     {% else %}
                     <a href="/login" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">Login</a>
-                    <a href="/register" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">Sign
-                        Up</a>
+                    {% endif %}
+
+                    {% if role == 'student' %}
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle">Français ▾</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="?lang=fr">Français</a></li>
+                            <li><a href="?lang=en">English</a></li>
+                            <li><a href="?lang=jp">日本語</a></li>
+                        </ul>
+                    </div>
                     {% endif %}
                 </div>
             </nav>

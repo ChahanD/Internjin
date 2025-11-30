@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Partner Companies | Internjin{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px; padding-bottom: 4rem;">
+    <h1 style="text-align: center; margin-bottom: 3rem;">Our Partner Companies</h1>
+
+    <div class="grid">
+        <!-- Company 1 -->
+        <div class="card" style="text-align: center;">
+            <div
+                style="width: 80px; height: 80px; background: #fff; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 2rem;">TJ</span>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">TechJapan</h3>
+            <p style="color: #8892b0; margin-bottom: 1rem;">Tokyo, Japan</p>
+            <p style="margin-bottom: 1.5rem;">Leading tech company specializing in AI and Robotics.</p>
+            <a href="/offers" class="btn btn-outline" style="width: 100%;">View Offers</a>
+        </div>
+
+        <!-- Company 2 -->
+        <div class="card" style="text-align: center;">
+            <div
+                style="width: 80px; height: 80px; background: #fff; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 2rem;">GC</span>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">Global Corp</h3>
+            <p style="color: #8892b0; margin-bottom: 1rem;">Osaka, Japan</p>
+            <p style="margin-bottom: 1.5rem;">International trading and logistics firm.</p>
+            <a href="/offers" class="btn btn-outline" style="width: 100%;">View Offers</a>
+        </div>
+
+        <!-- Company 3 -->
+        <div class="card" style="text-align: center;">
+            <div
+                style="width: 80px; height: 80px; background: #fff; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 2rem;">SK</span>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">StartUp Kyoto</h3>
+            <p style="color: #8892b0; margin-bottom: 1rem;">Kyoto, Japan</p>
+            <p style="margin-bottom: 1.5rem;">Innovative startup incubator and accelerator.</p>
+            <a href="/offers" class="btn btn-outline" style="width: 100%;">View Offers</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
