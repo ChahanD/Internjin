@@ -1,4 +1,4 @@
-s# Internjin
+# Internjin
 
 Internjin is a project aimed at centralizing internship management, connecting interns with companies, automating educational follow-up. 
 
