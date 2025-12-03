@@ -65,7 +65,7 @@ def offers():
     # Get filter parameters
     selected_locations = request.args.getlist('location')
     selected_durations = request.args.getlist('duration')
-    selected_company = request.args.get('company')
+    selected_companies = request.args.getlist('company')
     
     # Base query
     query = Offer.query
@@ -75,14 +75,15 @@ def offers():
         query = query.filter(Offer.location.in_(selected_locations))
     if selected_durations:
         query = query.filter(Offer.duration.in_(selected_durations))
-    if selected_company:
-        query = query.filter(Offer.company == selected_company)
+    if selected_companies:
+        query = query.filter(Offer.company.in_(selected_companies))
         
     offers_data = query.order_by(Offer.created_at.desc()).all()
     
     # Get unique values for filters from ALL offers (not just filtered ones) to keep options visible
     all_offers = Offer.query.all()
     unique_locations = sorted(list(set(o.location for o in all_offers if o.location)))
+    unique_companies = sorted(list(set(o.company for o in all_offers if o.company)))
     
     # Custom sort for durations
     duration_order = {
@@ -107,8 +108,10 @@ def offers():
                          offers=offers_data,
                          unique_locations=unique_locations,
                          unique_durations=unique_durations,
+                         unique_companies=unique_companies,
                          selected_locations=selected_locations,
-                         selected_durations=selected_durations)
+                         selected_durations=selected_durations,
+                         selected_companies=selected_companies)
 
 @app.route('/offer/<int:offer_id>')
 def offer_detail(offer_id):

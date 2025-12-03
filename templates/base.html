@@ -31,7 +31,8 @@
     </div>
     {% endif %}
 
-    <header style="top: 35px;"> <!-- Offset for top bar -->
+    <header {% if not current_user.is_authenticated %}style="top: 35px;" {% endif %}>
+        <!-- Offset for top bar only if visible -->
         <div class="container">
             <nav>
                 <a href="/" class="logo">
