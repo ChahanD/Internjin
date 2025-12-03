@@ -28,3 +28,5 @@ class Offer(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     recruiter_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     tags = db.Column(db.String(200)) # Comma separated tags
+    pdf_filename = db.Column(db.String(255), nullable=True)
+    start_date = db.Column(db.String(50), nullable=True)

@@ -163,7 +163,7 @@ nav {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding-top: 100px;
+    padding-top: 160px;
     position: relative;
 }
 
@@ -382,6 +382,6 @@ footer {
 
 /* Page Spacing Fixes */
 .page-with-header {
-    padding-top: 140px;
+    padding-top: 160px;
     /* Ensure content is not hidden by fixed header */
 }

@@ -1,31 +1,56 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Mes Offres</h2>
+<div class="container" style="padding-top: 160px; padding-bottom: 4rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 style="font-size: 2rem;">Mes Offres</h2>
         <a href="{{ url_for('new_offer') }}" class="btn btn-primary">Créer une offre</a>
     </div>
 
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div
+        style="background: rgba(8, 217, 214, 0.1); color: var(--color-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; border: 1px solid rgba(8, 217, 214, 0.2);">
+        {{ messages[0] }}
+    </div>
+    {% endif %}
+    {% endwith %}
+
     {% if offers %}
-    <div class="list-group">
+    <div style="display: grid; gap: 1.5rem;">
         {% for offer in offers %}
-        <div class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{ offer.title }}</h5>
-                <small>{{ offer.created_at.strftime('%Y-%m-%d') }}</small>
+        <div
+            style="background: var(--color-card-bg); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">{{ offer.title }}</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 0.5rem;">{{ offer.company }} • {{
+                    offer.location }}</p>
+                <div style="font-size: 0.9rem; color: #8892b0;">
+                    <span>⏱ {{ offer.duration }}</span>
+                    <span style="margin-left: 1rem;">📅 {{ offer.created_at.strftime('%Y-%m-%d') }}</span>
+                </div>
             </div>
-            <p class="mb-1">{{ offer.company }} - {{ offer.location }}</p>
-            <small>Duration: {{ offer.duration }}</small>
-            <div class="mt-2">
-                <a href="{{ url_for('edit_offer', offer_id=offer.id) }}"
-                    class="btn btn-sm btn-outline-secondary">Modifier</a>
+            <div style="display: flex; gap: 1rem;">
+                <a href="{{ url_for('offer_detail', offer_id=offer.id) }}" class="btn btn-outline"
+                    style="font-size: 0.9rem; padding: 8px 16px;">Voir</a>
+                <a href="{{ url_for('edit_offer', offer_id=offer.id) }}" class="btn btn-outline"
+                    style="font-size: 0.9rem; padding: 8px 16px; border-color: var(--color-primary); color: var(--color-primary);">Modifier</a>
+                <form action="{{ url_for('delete_offer', offer_id=offer.id) }}" method="POST"
+                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?');"
+                    style="display: inline;">
+                    <button type="submit" class="btn btn-outline"
+                        style="font-size: 0.9rem; padding: 8px 16px; border-color: #ff2e63; color: #ff2e63;">Supprimer</button>
+                </form>
             </div>
         </div>
         {% endfor %}
     </div>
     {% else %}
-    <div class="alert alert-info">Vous n'avez pas encore publié d'offres.</div>
+    <div
+        style="text-align: center; padding: 4rem; background: var(--color-card-bg); border-radius: 16px; border: 1px solid var(--color-border);">
+        <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">Vous n'avez pas encore publié d'offres.</p>
+        <a href="{{ url_for('new_offer') }}" class="btn btn-primary">Créer ma première offre</a>
+    </div>
     {% endif %}
 </div>
 {% endblock %}
