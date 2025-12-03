@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>{{ 'Modifier l\'offre' if action == 'edit' else 'Nouvelle Offre' }}</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="title" class="form-label">Titre du poste</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ offer.title if offer else '' }}"
+                required>
+        </div>
+        <div class="mb-3">
+            <label for="company" class="form-label">Entreprise</label>
+            <input type="text" class="form-control" id="company" name="company"
+                value="{{ offer.company if offer else '' }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="location" class="form-label">Lieu</label>
+            <input type="text" class="form-control" id="location" name="location"
+                value="{{ offer.location if offer else '' }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="duration" class="form-label">Durée</label>
+            <input type="text" class="form-control" id="duration" name="duration"
+                value="{{ offer.duration if offer else '' }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="tags" class="form-label">Tags (séparés par des virgules)</label>
+            <input type="text" class="form-control" id="tags" name="tags" value="{{ offer.tags if offer else '' }}">
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description"
+                rows="5">{{ offer.description if offer else '' }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">{{ 'Mettre à jour' if action == 'edit' else 'Publier' }}</button>
+        <a href="{{ url_for('recruiter_dashboard') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

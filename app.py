@@ -13,15 +13,24 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 # Import models after db init to avoid circular imports
-from models import User
+from models import User, Offer
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
 @app.context_processor
-def inject_role():
-    return dict(role=session.get('role', 'student'))
+def inject_globals():
+    return dict(
+        role=session.get('role', 'student'),
+        lang=session.get('lang', 'en')
+    )
+
+@app.route('/set_language/<lang>')
+def set_language(lang):
+    if lang in ['en', 'fr', 'jp']:
+        session['lang'] = lang
+    return redirect(request.referrer or url_for('index'))
 
 @app.route('/switch_role/<role>')
 def switch_role(role):
@@ -35,34 +44,13 @@ def index():
 
 @app.route('/offers')
 def offers():
-    # Dummy data for offers
-    offers_data = [
-        {
-            "id": 1,
-            "title": "Software Engineer Intern",
-            "company": "TechJapan",
-            "location": "Tokyo",
-            "duration": "6 months",
-            "tags": ["Python", "React", "English"]
-        },
-        {
-            "id": 2,
-            "title": "Marketing Assistant",
-            "company": "Global Corp",
-            "location": "Osaka",
-            "duration": "4 months",
-            "tags": ["Marketing", "Japanese N3"]
-        },
-        {
-            "id": 3,
-            "title": "Business Developer",
-            "company": "StartUp Kyoto",
-            "location": "Kyoto",
-            "duration": "6 months",
-            "tags": ["Sales", "English", "French"]
-        }
-    ]
+    offers_data = Offer.query.order_by(Offer.created_at.desc()).all()
     return render_template('offers.html', offers=offers_data)
+
+@app.route('/offer/<int:offer_id>')
+def offer_detail(offer_id):
+    offer = Offer.query.get_or_404(offer_id)
+    return render_template('offer_detail.html', offer=offer)
 
 @app.route('/companies')
 def companies_list():
@@ -117,7 +105,8 @@ def register():
             flash('Email already exists')
             return redirect(url_for('register'))
         
-        new_user = User(email=email, name=name)
+        role = request.form.get('role', 'student')
+        new_user = User(email=email, name=name, role=role)
         new_user.set_password(password)
         
         db.session.add(new_user)
@@ -133,6 +122,72 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/recruiter/dashboard')
+@login_required
+def recruiter_dashboard():
+    if current_user.role != 'recruiter':
+        flash('Access denied. Recruiter role required.')
+        return redirect(url_for('index'))
+    my_offers = Offer.query.filter_by(recruiter_id=current_user.id).order_by(Offer.created_at.desc()).all()
+    return render_template('recruiter/dashboard.html', offers=my_offers)
+
+@app.route('/recruiter/offer/new', methods=['GET', 'POST'])
+@login_required
+def new_offer():
+    if current_user.role != 'recruiter':
+        flash('Access denied.')
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        title = request.form.get('title')
+        company = request.form.get('company')
+        location = request.form.get('location')
+        duration = request.form.get('duration')
+        description = request.form.get('description')
+        tags = request.form.get('tags')
+        
+        offer = Offer(
+            title=title,
+            company=company,
+            location=location,
+            duration=duration,
+            description=description,
+            tags=tags,
+            recruiter_id=current_user.id
+        )
+        db.session.add(offer)
+        db.session.commit()
+        flash('Offer created successfully!')
+        return redirect(url_for('recruiter_dashboard'))
+        
+    return render_template('recruiter/offer_form.html', action='create')
+
+@app.route('/recruiter/offer/<int:offer_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_offer(offer_id):
+    if current_user.role != 'recruiter':
+        flash('Access denied.')
+        return redirect(url_for('index'))
+        
+    offer = Offer.query.get_or_404(offer_id)
+    if offer.recruiter_id != current_user.id:
+        flash('You can only edit your own offers.')
+        return redirect(url_for('recruiter_dashboard'))
+        
+    if request.method == 'POST':
+        offer.title = request.form.get('title')
+        offer.company = request.form.get('company')
+        offer.location = request.form.get('location')
+        offer.duration = request.form.get('duration')
+        offer.description = request.form.get('description')
+        offer.tags = request.form.get('tags')
+        
+        db.session.commit()
+        flash('Offer updated successfully!')
+        return redirect(url_for('recruiter_dashboard'))
+        
+    return render_template('recruiter/offer_form.html', offer=offer, action='edit')
 
 if __name__ == '__main__':
     with app.app_context():

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px; padding-bottom: 4rem;">
+    <div
+        style="background: var(--color-card-bg); border: 1px solid var(--color-border); border-radius: 24px; padding: 3rem; max-width: 900px; margin: 0 auto;">
+
+        <div style="margin-bottom: 2rem;">
+            <a href="{{ url_for('offers') }}" style="color: var(--color-text-muted); font-size: 0.9rem;">&larr; Back to
+                Offers</a>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+            <div>
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">{{ offer.title }}</h1>
+                <h3 style="color: var(--color-primary); font-size: 1.5rem;">{{ offer.company }}</h3>
+            </div>
+            <div style="text-align: right;">
+                <span style="display: block; font-size: 1.1rem; margin-bottom: 0.5rem;">📍 {{ offer.location }}</span>
+                <span style="display: block; color: var(--color-text-muted);">⏱ {{ offer.duration }}</span>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 2rem;">
+            {% if offer.tags %}
+            {% for tag in offer.tags.split(',') %}
+            <span
+                style="background: rgba(255,255,255,0.1); padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; margin-right: 0.5rem; display: inline-block; margin-bottom: 0.5rem;">
+                {{ tag.strip() }}
+            </span>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <div style="border-top: 1px solid var(--color-border); padding-top: 2rem; margin-bottom: 2rem;">
+            <h4 style="margin-bottom: 1rem;">Description</h4>
+            <div style="color: var(--color-text-muted); line-height: 1.8; white-space: pre-wrap;">{{ offer.description
+                or 'No description provided.' }}</div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="#" class="btn btn-primary" style="padding: 16px 48px; font-size: 1.2rem;">Apply Now</a>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-muted);">You will be redirected to
+                the application form.</p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

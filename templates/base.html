@@ -52,9 +52,9 @@
                     <div class="dropdown">
                         <a href="#" class="dropdown-toggle">Français ▾</a>
                         <ul class="dropdown-menu">
-                            <li><a href="?lang=fr">Français</a></li>
-                            <li><a href="?lang=en">English</a></li>
-                            <li><a href="?lang=jp">日本語</a></li>
+                            <li><a href="{{ url_for('set_language', lang='fr') }}">Français</a></li>
+                            <li><a href="{{ url_for('set_language', lang='en') }}">English</a></li>
+                            <li><a href="{{ url_for('set_language', lang='jp') }}">日本語</a></li>
                         </ul>
                     </div>
                     <a href="/contact" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">Contact
@@ -65,9 +65,9 @@
                     <div class="dropdown">
                         <a href="#" class="dropdown-toggle">Français ▾</a>
                         <ul class="dropdown-menu">
-                            <li><a href="?lang=fr">Français</a></li>
-                            <li><a href="?lang=en">English</a></li>
-                            <li><a href="?lang=jp">日本語</a></li>
+                            <li><a href="{{ url_for('set_language', lang='fr') }}">Français</a></li>
+                            <li><a href="{{ url_for('set_language', lang='en') }}">English</a></li>
+                            <li><a href="{{ url_for('set_language', lang='jp') }}">日本語</a></li>
                         </ul>
                     </div>
                     {% endif %}

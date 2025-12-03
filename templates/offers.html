@@ -50,14 +50,19 @@
                         <span>⏱ {{ offer.duration }}</span>
                     </div>
                     <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                        {% for tag in offer.tags %}
+                        {% if offer.tags %}
+                        {% if offer.tags %}
+                        {% for tag in offer.tags.split(',') %}
                         <span
                             style="background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">{{
-                            tag }}</span>
+                            tag.strip() }}</span>
                         {% endfor %}
+                        {% endif %}
+                        {% endif %}
                     </div>
                 </div>
-                <a href="#" class="btn btn-outline" style="font-size: 0.9rem;">View Details</a>
+                <a href="{{ url_for('offer_detail', offer_id=offer.id) }}" class="btn btn-outline"
+                    style="font-size: 0.9rem;">View Details</a>
             </div>
             {% endfor %}
         </div>
