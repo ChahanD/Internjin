@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us | Internjin{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 160px; padding-bottom: 4rem;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <h1 style="text-align: center; margin-bottom: 3rem;">Get in Touch</h1>
+
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 3rem;">
+            <!-- Contact Info -->
+            <div>
+                <h3 style="margin-bottom: 1.5rem;">Contact Information</h3>
+                <div style="margin-bottom: 2rem;">
+                    <p style="color: #8892b0; margin-bottom: 0.5rem;">Address</p>
+                    <p>Shibuya Scramble Square<br>2-24-12 Shibuya, Shibuya-ku<br>Tokyo 150-0002, Japan</p>
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <p style="color: #8892b0; margin-bottom: 0.5rem;">Email</p>
+                    <p><a href="mailto:contact@internjin.com"
+                            style="color: var(--color-primary);">contact@internjin.com</a></p>
+                </div>
+                <div>
+                    <p style="color: #8892b0; margin-bottom: 0.5rem;">Social</p>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="#">LinkedIn</a>
+                        <a href="#">Twitter</a>
+                        <a href="#">Instagram</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="card">
+                <form>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem;">Name</label>
+                        <input type="text" required
+                            style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem;">Email</label>
+                        <input type="email" required
+                            style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem;">Message</label>
+                        <textarea rows="4" required
+                            style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white; resize: vertical;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

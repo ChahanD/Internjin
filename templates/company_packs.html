@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Our Packs | Internjin{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 160px; padding-bottom: 4rem;">
+    <h1 style="text-align: center; margin-bottom: 1rem;">Recruitment Solutions</h1>
+    <p
+        style="text-align: center; color: #8892b0; margin-bottom: 4rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+        Choose the perfect plan to connect with top French talent.
+    </p>
+
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <!-- Starter Pack -->
+        <div class="card" style="display: flex; flex-direction: column; border-top: 4px solid #8892b0;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Starter</h2>
+            <p style="font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem;">¥0 <span
+                    style="font-size: 1rem; color: #8892b0; font-weight: 400;">/ month</span></p>
+            <ul style="margin-bottom: 2rem; flex-grow: 1;">
+                <li style="margin-bottom: 1rem;">✓ Post up to 1 internship offer</li>
+                <li style="margin-bottom: 1rem;">✓ Basic company profile</li>
+                <li style="margin-bottom: 1rem; color: #8892b0;">✕ Access to CV database</li>
+            </ul>
+            <a href="/register" class="btn btn-outline" style="text-align: center;">Get Started</a>
+        </div>
+
+        <!-- Pro Pack -->
+        <div class="card"
+            style="display: flex; flex-direction: column; border-top: 4px solid var(--color-primary); transform: scale(1.05); z-index: 1;">
+            <div
+                style="background: var(--color-primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; width: fit-content; margin-bottom: 1rem;">
+                POPULAR</div>
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Pro</h2>
+            <p style="font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem;">¥50,000 <span
+                    style="font-size: 1rem; color: #8892b0; font-weight: 400;">/ month</span></p>
+            <ul style="margin-bottom: 2rem; flex-grow: 1;">
+                <li style="margin-bottom: 1rem;">✓ Unlimited internship offers</li>
+                <li style="margin-bottom: 1rem;">✓ Enhanced company profile</li>
+                <li style="margin-bottom: 1rem;">✓ Access to CV database (limit 50)</li>
+                <li style="margin-bottom: 1rem;">✓ Priority support</li>
+            </ul>
+            <a href="/register" class="btn btn-primary" style="text-align: center;">Choose Pro</a>
+        </div>
+
+        <!-- Enterprise Pack -->
+        <div class="card" style="display: flex; flex-direction: column; border-top: 4px solid var(--color-secondary);">
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Enterprise</h2>
+            <p style="font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem;">Custom</p>
+            <ul style="margin-bottom: 2rem; flex-grow: 1;">
+                <li style="margin-bottom: 1rem;">✓ Unlimited everything</li>
+                <li style="margin-bottom: 1rem;">✓ Dedicated account manager</li>
+                <li style="margin-bottom: 1rem;">✓ Visa support assistance</li>
+                <li style="margin-bottom: 1rem;">✓ Custom branding</li>
+            </ul>
+            <a href="/contact" class="btn btn-outline" style="text-align: center;">Contact Sales</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

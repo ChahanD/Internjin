@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="padding-top: 160px; padding-bottom: 4rem;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <h2 style="font-size: 2rem; margin-bottom: 2rem;">{{ 'Modifier l\'offre' if action == 'edit' else 'Nouvelle
+            Offre' }}</h2>
+        <form method="POST" enctype="multipart/form-data"
+            style="background: var(--color-card-bg); padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border);">
+            <div style="margin-bottom: 1.5rem;">
+                <label for="title" style="display: block; margin-bottom: 0.5rem;">Titre du poste</label>
+                <input type="text" id="title" name="title" value="{{ offer.title if offer else '' }}" required
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label for="company" style="display: block; margin-bottom: 0.5rem;">Entreprise</label>
+                <input type="text" id="company" name="company" value="{{ offer.company if offer else '' }}" required
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div>
+                    <label for="location" style="display: block; margin-bottom: 0.5rem;">Lieu</label>
+                    <input type="text" id="location" name="location" value="{{ offer.location if offer else '' }}"
+                        required
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+                </div>
+                <div>
+                    <label for="duration" style="display: block; margin-bottom: 0.5rem;">Durée</label>
+                    <select id="duration" name="duration" required
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+                        <option value="" disabled {{ 'selected' if not offer else '' }}>Choisir une durée</option>
+                        <option value="1 mois" {{ 'selected' if offer and offer.duration=='1 mois' else '' }}>1 mois
+                        </option>
+                        <option value="3 mois" {{ 'selected' if offer and offer.duration=='3 mois' else '' }}>3 mois
+                        </option>
+                        <option value="6 mois" {{ 'selected' if offer and offer.duration=='6 mois' else '' }}>6 mois
+                        </option>
+                        <option value="9 mois" {{ 'selected' if offer and offer.duration=='9 mois' else '' }}>9 mois
+                        </option>
+                        <option value="1 an" {{ 'selected' if offer and offer.duration=='1 an' else '' }}>1 an</option>
+                        <option value="2 ans" {{ 'selected' if offer and offer.duration=='2 ans' else '' }}>2 ans
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label for="start_date" style="display: block; margin-bottom: 0.5rem;">Date de début souhaitée</label>
+                <input type="text" id="start_date" name="start_date" value="{{ offer.start_date if offer else '' }}"
+                    placeholder="ex: Septembre 2025"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label for="tags" style="display: block; margin-bottom: 0.5rem;">Tags (séparés par des virgules)</label>
+                <input type="text" id="tags" name="tags" value="{{ offer.tags if offer else '' }}"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label for="pdf_file" style="display: block; margin-bottom: 0.5rem;">Fichier PDF de l'offre
+                    (Optionnel)</label>
+                <input type="file" id="pdf_file" name="pdf_file" accept=".pdf"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+                {% if offer and offer.pdf_filename %}
+                <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #8892b0;">
+                    Fichier actuel: <a href="{{ url_for('static', filename='uploads/offers/' + offer.pdf_filename) }}"
+                        target="_blank" style="color: var(--color-primary);">Voir le PDF</a>
+                </div>
+                {% endif %}
+            </div>
+            <div style="margin-bottom: 2rem;">
+                <label for="description" style="display: block; margin-bottom: 0.5rem;">Description</label>
+                <textarea id="description" name="description" rows="5"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">{{ offer.description if offer else '' }}</textarea>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">{{ 'Mettre à jour' if action == 'edit' else 'Publier'
+                    }}</button>
+                <a href="{{ url_for('recruiter_dashboard') }}" class="btn btn-outline">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
