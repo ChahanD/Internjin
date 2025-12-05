@@ -82,8 +82,10 @@
                         <ul class="dropdown-menu">
                             {% if current_user.role == 'recruiter' %}
                             <li><a href="{{ url_for('recruiter_dashboard') }}">Dashboard</a></li>
+                            {% elif current_user.role == 'student' %}
+                            <li><a href="{{ url_for('student_profile') }}">My Profile</a></li>
                             {% endif %}
-                            <li><a href="#">My Account</a></li>
+                            <li><a href="#">Settings</a></li>
                             <li><a href="/logout">Logout</a></li>
                         </ul>
                     </div>

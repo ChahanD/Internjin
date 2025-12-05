@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="padding-top: 160px; padding-bottom: 4rem;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <h2 style="font-size: 2rem; margin-bottom: 2rem;">Mon Profil</h2>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div
+            style="background: rgba(8, 217, 214, 0.1); color: var(--color-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; border: 1px solid rgba(8, 217, 214, 0.2);">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data"
+            style="background: var(--color-card-bg); padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border);">
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="name" style="display: block; margin-bottom: 0.5rem;">Nom complet</label>
+                <input type="text" id="name" name="name" value="{{ current_user.name if current_user.name else '' }}"
+                    required
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="diploma" style="display: block; margin-bottom: 0.5rem;">Diplôme / Formation</label>
+                <input type="text" id="diploma" name="diploma"
+                    value="{{ current_user.diploma if current_user.diploma else '' }}"
+                    placeholder="ex: Master en Informatique"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label for="cv_file" style="display: block; margin-bottom: 0.5rem;">CV (PDF uniquement)</label>
+                <input type="file" id="cv_file" name="cv_file" accept=".pdf"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+
+                {% if current_user.cv_filename %}
+                <div
+                    style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; gap: 1rem;">
+                    <span style="font-size: 2rem;">📄</span>
+                    <div>
+                        <div style="font-weight: bold; margin-bottom: 0.2rem;">CV Actuel</div>
+                        <a href="{{ url_for('static', filename='uploads/cvs/' + current_user.cv_filename) }}"
+                            target="_blank" style="color: var(--color-primary); font-size: 0.9rem;">Télécharger /
+                            Voir</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                <a href="{{ url_for('index') }}" class="btn btn-outline">Retour</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

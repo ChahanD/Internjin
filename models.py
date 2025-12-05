@@ -9,6 +9,8 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     name = db.Column(db.String(100))
     role = db.Column(db.String(20), default='student')
+    cv_filename = db.Column(db.String(255), nullable=True)
+    diploma = db.Column(db.String(100), nullable=True)
     
     offers = db.relationship('Offer', backref='recruiter', lazy=True)
 

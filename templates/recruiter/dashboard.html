@@ -4,7 +4,10 @@
 <div class="container" style="padding-top: 160px; padding-bottom: 4rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <h2 style="font-size: 2rem;">Mes Offres</h2>
-        <a href="{{ url_for('new_offer') }}" class="btn btn-primary">Créer une offre</a>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{{ url_for('index') }}" class="btn btn-outline">Retour</a>
+            <a href="{{ url_for('new_offer') }}" class="btn btn-primary">Créer une offre</a>
+        </div>
     </div>
 
     {% with messages = get_flashed_messages() %}

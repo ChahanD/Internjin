@@ -4,14 +4,16 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from extensions import db
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-change-this-in-production'
+app.config['SECRET_KEY'] = 'dev'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///internjin.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/uploads/offers'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max-limit
+app.config['UPLOAD_FOLDER_CV'] = 'static/uploads/cvs'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16MB max file size
 ALLOWED_EXTENSIONS = {'pdf'}
 
 import os
+from datetime import datetime
 from werkzeug.utils import secure_filename
 
 def allowed_file(filename):
@@ -330,6 +332,44 @@ def delete_offer(offer_id):
     db.session.commit()
     flash('Offer deleted successfully!')
     return redirect(url_for('recruiter_dashboard'))
+
+@app.route('/student/profile', methods=['GET', 'POST'])
+@login_required
+def student_profile():
+    if current_user.role != 'student':
+        flash('Access denied. Student role required.')
+        return redirect(url_for('index'))
+        
+    if request.method == 'POST':
+        current_user.name = request.form.get('name')
+        current_user.diploma = request.form.get('diploma')
+        
+        # Handle CV Upload
+        if 'cv_file' in request.files:
+            file = request.files['cv_file']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                # Add timestamp to filename to prevent collisions
+                timestamp = int(datetime.utcnow().timestamp())
+                filename = f"{timestamp}_{filename}"
+                
+                # Ensure directory exists
+                os.makedirs(app.config['UPLOAD_FOLDER_CV'], exist_ok=True)
+                
+                # Delete old CV if exists
+                if current_user.cv_filename:
+                    old_file_path = os.path.join(app.config['UPLOAD_FOLDER_CV'], current_user.cv_filename)
+                    if os.path.exists(old_file_path):
+                        os.remove(old_file_path)
+                
+                file.save(os.path.join(app.config['UPLOAD_FOLDER_CV'], filename))
+                current_user.cv_filename = filename
+        
+        db.session.commit()
+        flash('Profile updated successfully!')
+        return redirect(url_for('student_profile'))
+        
+    return render_template('student/profile.html')
 
 if __name__ == '__main__':
     with app.app_context():
