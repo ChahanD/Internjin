@@ -53,7 +53,7 @@
                 <div style="display: flex; gap: 1rem; align-items: center;">
                     {% if role == 'recruiter' %}
                     <div class="dropdown">
-                        <a href="#" class="dropdown-toggle">Français ▾</a>
+                        <a href="#" class="dropdown-toggle">English ▾</a>
                         <ul class="dropdown-menu">
                             <li><a href="{{ url_for('set_language', lang='fr') }}">Français</a></li>
                             <li><a href="{{ url_for('set_language', lang='en') }}">English</a></li>
@@ -66,7 +66,7 @@
 
                     {% if role == 'student' %}
                     <div class="dropdown">
-                        <a href="#" class="dropdown-toggle">Français ▾</a>
+                        <a href="#" class="dropdown-toggle">English ▾</a>
                         <ul class="dropdown-menu">
                             <li><a href="{{ url_for('set_language', lang='fr') }}">Français</a></li>
                             <li><a href="{{ url_for('set_language', lang='en') }}">English</a></li>
