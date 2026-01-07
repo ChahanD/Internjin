@@ -120,17 +120,31 @@ def offer_detail(offer_id):
 
 @app.route('/companies')
 def companies_list():
-    # Aggregate data from offers
+# Aggregate data from offers
     offers = Offer.query.all()
     companies_data = {}
     
+    # On définit le chemin vers le dossier des logos pour vérifier l'existence des fichiers
+    logos_folder = os.path.join(app.root_path, 'static', 'logos')
+    
     for offer in offers:
         if offer.company not in companies_data:
+            # Vérification basique : est-ce qu'il existe un fichier "NomEntreprise.png" ?
+            # Pour faire propre, on peut aussi gérer les minuscules/majuscules
+            logo_filename = f"{offer.company}.png"
+            logo_path = None
+            
+            # On vérifie si le fichier existe physiquement
+            if os.path.exists(os.path.join(logos_folder, logo_filename)):
+                # Si oui, on crée le chemin web (URL)
+                logo_path = url_for('static', filename=f'logos/{logo_filename}')
+            
             companies_data[offer.company] = {
                 'name': offer.company,
                 'offer_count': 0,
                 'locations': set(),
-                'latest_offer_date': offer.created_at
+                'latest_offer_date': offer.created_at,
+                'logo': logo_path  # <--- C'est ici qu'on ajoute la variable pour le HTML
             }
         
         companies_data[offer.company]['offer_count'] += 1
@@ -142,6 +156,7 @@ def companies_list():
     companies = sorted(companies_data.values(), key=lambda x: x['latest_offer_date'], reverse=True)
     
     return render_template('companies_list.html', companies=companies)
+            
 
 @app.route('/companies/solutions')
 def company_solutions():
