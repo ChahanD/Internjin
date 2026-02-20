@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="padding-top: 160px; padding-bottom: 4rem;">
+    <div
+        style="background: var(--color-card-bg); padding: 3rem; border-radius: 16px; border: 1px solid var(--color-border); max-width: 600px; margin: 0 auto; box-shadow: var(--shadow-card); backdrop-filter: var(--backdrop-blur);">
+
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Apply for {{ offer.title }}</h2>
+            <p style="color: var(--color-text-muted);">Step 1: Upload your CV</p>
+            <p style="color: var(--color-text-muted); font-size: 0.9rem;">We'll analyze your CV to pre-fill the
+                application form.</p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div
+            style="background: rgba(255, 46, 99, 0.1); color: var(--color-primary); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center;">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data" action="{{ url_for('apply_to_offer', offer_id=offer.id) }}">
+            <div style="margin-bottom: 2rem;">
+                <label for="cv_file" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Upload CV (PDF
+                    only)</label>
+                <input type="file" id="cv_file" name="cv_file" accept=".pdf" required
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white; cursor: pointer;">
+                <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Max file size: 16MB.
+                </p>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 16px;">
+                    ✨ Analyze & Continue
+                </button>
+                <a href="{{ url_for('offer_detail', offer_id=offer.id) }}" class="btn btn-outline"
+                    style="width: 100%; text-align: center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -60,7 +60,8 @@
         </div>
 
         <div style="text-align: center;">
-            <a href="#" class="btn btn-primary" style="padding: 16px 48px; font-size: 1.2rem;">Apply Now</a>
+            <a href="{{ url_for('apply_to_offer', offer_id=offer.id) }}" class="btn btn-primary"
+                style="padding: 16px 48px; font-size: 1.2rem;">Apply Now</a>
             <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-muted);">You will be redirected to
                 the application form.</p>
         </div>

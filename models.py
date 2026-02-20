@@ -32,3 +32,16 @@ class Offer(db.Model):
     tags = db.Column(db.String(200)) # Comma separated tags
     pdf_filename = db.Column(db.String(255), nullable=True)
     start_date = db.Column(db.String(50), nullable=True)
+
+class Application(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'), nullable=False)
+    cv_filename = db.Column(db.String(255), nullable=False)
+    extracted_data = db.Column(db.Text, nullable=True) # Storing JSON as text for simplicity
+    compatibility_score = db.Column(db.Float, default=0.0)
+    status = db.Column(db.String(20), default='pending') # pending, viewed, accepted, rejected
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    student = db.relationship('User', backref='applications')
+    offer = db.relationship('Offer', backref='applications')

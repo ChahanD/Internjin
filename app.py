@@ -28,7 +28,9 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 # Import models after db init to avoid circular imports
-from models import User, Offer
+from models import User, Offer, Application
+from pypdf import PdfReader
+import json
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -370,6 +372,286 @@ def student_profile():
         return redirect(url_for('student_profile'))
         
     return render_template('student/profile.html')
+
+def extract_text_from_pdf(filepath):
+    try:
+        reader = PdfReader(filepath)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text()
+        return text
+    except Exception as e:
+        print(f"Error reading PDF: {e}")
+        return ""
+
+def analyze_cv_text(text):
+    data = {
+        'name': '',
+        'email': '',
+        'phone': '',
+        'diploma': '',
+        'github': '',
+        'nationality': '',
+        'languages': '',
+        'skills': '',
+        'experience': ''
+    }
+    
+    # 0. Clean "spaced out" text often found in PDFs (e.g., "S k i l l s")
+    import re
+    lines = text.split('\n')
+    cleaned_lines = []
+    for line in lines:
+        if len(line) > 10 and line.count(' ') / len(line) > 0.4:
+            cleaned_line = line.replace('  ', '<SPACE>').replace(' ', '').replace('<SPACE>', ' ')
+            cleaned_lines.append(cleaned_line)
+        else:
+            cleaned_lines.append(line)
+    
+    clean_text = '\n'.join(cleaned_lines)
+    
+    # 1. Extract Email Using Regex
+    email_regex = r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)"
+    email_match = re.search(email_regex, clean_text)
+    if email_match:
+        data['email'] = email_match.group(1)
+
+    # 2. Extract Phone Number (Basic Regex)
+    phone_regex = r"(\+?\d{1,4}?[\s.-]?\(?\d{1,3}?\)?[\s.-]?\d{1,4}[\s.-]?\d{1,4}[\s.-]?\d{1,9})"
+    phone_match = re.search(phone_regex, clean_text)
+    if phone_match:
+         data['phone'] = phone_match.group(1)
+         
+    # 3. Extract Name (Heuristics: Usually at the top, Title Case)
+    lines = [line.strip() for line in clean_text.split('\n') if line.strip()]
+    if lines:
+        possible_names = []
+        for line in lines[:8]: # Look in first 8 lines
+            # Name typical structure: 2-4 words, First letters capitalized or ALL CAPS
+            words = line.split()
+            if 1 < len(words) < 5 and all(word.isalpha() or '-' in word for word in words):
+                possible_names.append(line)
+        
+        if possible_names:
+            bad_words = ["resume", "cv", "curriculum", "vitae", "contact", "profile"]
+            for p_name in possible_names:
+                if not any(bw in p_name.lower() for bw in bad_words):
+                    # Clean up capitalization for display
+                    data['name'] = p_name.title()
+                    break
+
+    # 4. Extract Github
+    github_regex = r"(?i)(?:github\.com/)([a-zA-Z0-9-]+)"
+    github_match = re.search(github_regex, clean_text)
+    if github_match:
+        data['github'] = "https://github.com/" + github_match.group(1)
+    else:
+        # Sometimes it's just written as "GitHub: username"
+        github_regex_2 = r"(?i)github\s*[:\-]?\s*([a-zA-Z0-9-]+)"
+        github_match_2 = re.search(github_regex_2, clean_text)
+        if github_match_2:
+            data['github'] = "https://github.com/" + github_match_2.group(1)
+
+    # 5. Extract Nationality
+    nationalities = ['french', 'english', 'american', 'japanese', 'chinese', 'indian', 'german', 'spanish', 'italian', 'canadian']
+    words = set(re.split(r'\W+', clean_text.lower()))
+    
+    # Very naive approach: If it says "Nationality: French" or just finds the word near the top
+    nat_regex = r"(?i)(?:nationality|nationalité)\s*[:\-]\s*([A-Za-z]+)"
+    nat_match = re.search(nat_regex, clean_text)
+    if nat_match:
+        data['nationality'] = nat_match.group(1).title()
+    else:
+        # Fallback: check first 500 characters for common nationalities
+        top_text = clean_text[:500].lower()
+        for nat in nationalities:
+            if nat in top_text:
+                data['nationality'] = nat.title()
+                break
+
+    # 6. Extract Languages
+    languages_list = ['french', 'english', 'spanish', 'german', 'japanese', 'chinese', 'mandarin', 'italian', 'arabic', 'russian', 'portuguese', 'korean']
+    found_langs = []
+    
+    # Try to find a language section, or just scan the document
+    for lang in languages_list:
+        if re.search(r'\b' + lang + r'\b', clean_text.lower()):
+            found_langs.append(lang.title())
+    
+    # Exclude nationalities mistakenly picked up as languages if they are the only match 
+    if len(found_langs) > 0:
+         data['languages'] = ", ".join(found_langs)
+
+    # 7. Extract Diploma / Education
+    # Look for keywords like "Master", "Bachelor", "Degree", "Engineering", "Licence"
+    edu_regex = r"(?i)(?:master|bachelor|degree|licence|engineering|ingénieur)(?:'s)?\s*(?:in|of|en)?\s*([a-zA-Z\s]+)"
+    edu_match = re.search(edu_regex, clean_text)
+    if edu_match:
+        # Capture the context line
+        for line in lines:
+            if edu_match.group(0).lower() in line.lower():
+                data['diploma'] = line.strip()
+                break
+
+    # 8. Extract Skills (Expanded List)
+    skills_list = [
+        'python', 'java', 'c++', 'c#', 'c', 'javascript', 'html', 'css', 'react', 'angular', 'vue', 
+        'node.js', 'django', 'flask', 'spring', 'sql', 'mysql', 'postgresql', 'mongodb', 
+        'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'git', 'linux', 'machine learning', 
+        'deep learning', 'data analysis', 'pandas', 'numpy', 'tensorflow', 'pytorch', 'scikit-learn',
+        'php', 'ruby', 'swift', 'kotlin', 'go', 'rust', 'typescript', 'figma', 'ros', 'ros2', 'arduino', 'stm32',
+        'project management', 'agile', 'scrum', 'leadership', 'communication', 'teamwork',
+        'problem solving', 'management', 'marketing', 'sales', 'finance', 'accounting', 'seo'
+    ]
+    
+    words = set(re.split(r'\W+', clean_text.lower()))
+    found_skills = []
+    text_lower = clean_text.lower()
+    
+    for skill in skills_list:
+        if ' ' in skill or skill in ['c++', 'c#', 'node.js', 'ros2']: 
+            if skill in text_lower:
+                found_skills.append(skill.upper() if len(skill) <= 3 else skill.title())
+        elif skill in words:
+            found_skills.append(skill.upper() if len(skill) <= 3 else skill.title())
+            
+    data['skills'] = ", ".join(found_skills)
+
+    # 9. Extract Experience Summary
+    exp_regex = r"(?i)(?:experience|work experience|emploi|professionnelles)(.*?)(?:education|skills|projects|interests|$)"
+    exp_match = re.search(exp_regex, clean_text, re.DOTALL)
+    if exp_match:
+        snippet = exp_match.group(1).strip()
+        data['experience'] = snippet[:300] + ('...' if len(snippet) > 300 else '')
+
+    return data
+
+@app.route('/offer/<int:offer_id>/apply', methods=['GET', 'POST'])
+@login_required
+def apply_to_offer(offer_id):
+    if current_user.role != 'student':
+        flash('Only students can apply.')
+        return redirect(url_for('offer_detail', offer_id=offer_id))
+        
+    offer = Offer.query.get_or_404(offer_id)
+    
+    # Check if already applied
+    existing_application = Application.query.filter_by(student_id=current_user.id, offer_id=offer_id).first()
+    if existing_application:
+        flash('You have already applied to this offer.')
+        return redirect(url_for('offer_detail', offer_id=offer_id))
+
+    if request.method == 'POST':
+        if 'cv_file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+            
+        file = request.files['cv_file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+            
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            import time
+            filename = f"app_{int(time.time())}_{filename}"
+            filepath = os.path.join(app.config['UPLOAD_FOLDER_CV'], filename)
+            
+            # Ensure directory exists
+            os.makedirs(app.config['UPLOAD_FOLDER_CV'], exist_ok=True)
+            
+            file.save(filepath)
+            
+            # Parsing logic
+            text = extract_text_from_pdf(filepath)
+            parsed_data = analyze_cv_text(text)
+            
+            return render_template('student/apply_step2.html', offer=offer, cv_filename=filename, parsed_data=parsed_data)
+            
+    return render_template('student/apply_step1.html', offer=offer)
+
+@app.route('/offer/<int:offer_id>/apply/confirm', methods=['POST'])
+@login_required
+def confirm_application(offer_id):
+    offer = Offer.query.get_or_404(offer_id)
+    
+    cv_filename = request.form.get('cv_filename')
+    
+    # Gather final data
+    final_data = {
+        'name': request.form.get('name'),
+        'email': request.form.get('email'),
+        'phone': request.form.get('phone'),
+        'diploma': request.form.get('diploma'),
+        'github': request.form.get('github'),
+        'nationality': request.form.get('nationality'),
+        'languages': request.form.get('languages'),
+        'skills': request.form.get('skills'),
+        'experience': request.form.get('experience')
+    }
+    
+    # Calculate compatibility (Simple demo logic)
+    compatibility_score = 0.0
+    offer_text = (offer.title + " " + (offer.description or "") + " " + (offer.tags or "")).lower()
+    student_text = (final_data['skills'] + " " + final_data['experience']).lower()
+    
+    # Check for overlapping words (very naive)
+    offer_words = set(offer_text.split())
+    student_words = set(student_text.split())
+    
+    overlap = offer_words.intersection(student_words)
+    # Avoid division by zero
+    if len(offer_words) > 0:
+        compatibility_score = min(len(overlap) / (len(offer_words) * 0.1) * 100, 100.0) # Assume 10% overlap is "perfect" for this demo
+    
+    application = Application(
+        student_id=current_user.id,
+        offer_id=offer_id,
+        cv_filename=cv_filename,
+        extracted_data=json.dumps(final_data),
+        compatibility_score=round(compatibility_score, 1),
+        status='pending'
+    )
+    
+    db.session.add(application)
+    db.session.commit()
+    
+    flash('Application submitted successfully!')
+    return redirect(url_for('offer_detail', offer_id=offer_id))
+
+@app.route('/recruiter/offer/<int:offer_id>/applications')
+@login_required
+def view_offer_applications(offer_id):
+    if current_user.role != 'recruiter':
+        flash('Access denied.')
+        return redirect(url_for('index'))
+        
+    offer = Offer.query.get_or_404(offer_id)
+    if offer.recruiter_id != current_user.id:
+        flash('You can only view applications for your own offers.')
+        return redirect(url_for('recruiter_dashboard'))
+        
+    applications = Application.query.filter_by(offer_id=offer_id).order_by(Application.created_at.desc()).all()
+    return render_template('recruiter/applications.html', offer=offer, applications=applications)
+
+@app.route('/recruiter/application/<int:application_id>')
+@login_required
+def view_application(application_id):
+    if current_user.role != 'recruiter':
+        flash('Access denied.')
+        return redirect(url_for('index'))
+        
+    application = Application.query.get_or_404(application_id)
+    if application.offer.recruiter_id != current_user.id:
+        flash('Access denied.')
+        return redirect(url_for('recruiter_dashboard'))
+        
+    # Mark as viewed if pending
+    if application.status == 'pending':
+        application.status = 'viewed'
+        db.session.commit()
+        
+    return render_template('recruiter/application_detail.html', application=application)
 
 if __name__ == '__main__':
     with app.app_context():

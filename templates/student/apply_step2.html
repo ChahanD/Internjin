@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="padding-top: 160px; padding-bottom: 4rem;">
+    <div
+        style="background: var(--color-card-bg); padding: 3rem; border-radius: 16px; border: 1px solid var(--color-border); max-width: 600px; margin: 0 auto; box-shadow: var(--shadow-card); backdrop-filter: var(--backdrop-blur);">
+
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Confirm Application</h2>
+            <div
+                style="background: rgba(8, 217, 214, 0.1); color: var(--color-secondary); padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid rgba(8, 217, 214, 0.2); font-size: 0.95rem;">
+                ℹ️ We've pre-filled this form from your CV. Please review and correct any information.
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('confirm_application', offer_id=offer.id) }}">
+            <input type="hidden" name="cv_filename" value="{{ cv_filename }}">
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="name" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Full Name</label>
+                <input type="text" id="name" name="name" value="{{ parsed_data.get('name', current_user.name) }}"
+                    required
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email</label>
+                <input type="email" id="email" name="email" value="{{ parsed_data.get('email', current_user.email) }}"
+                    required
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="phone" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Phone Number</label>
+                <input type="tel" id="phone" name="phone" value="{{ parsed_data.get('phone', '') }}"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="diploma" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Diploma /
+                    Education</label>
+                <input type="text" id="diploma" name="diploma" value="{{ parsed_data.get('diploma', '') }}"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="github" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">GitHub
+                    Profile</label>
+                <input type="url" id="github" name="github" value="{{ parsed_data.get('github', '') }}"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div>
+                    <label for="nationality"
+                        style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Nationality</label>
+                    <input type="text" id="nationality" name="nationality"
+                        value="{{ parsed_data.get('nationality', '') }}"
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+                </div>
+                <div>
+                    <label for="languages"
+                        style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Languages</label>
+                    <input type="text" id="languages" name="languages" value="{{ parsed_data.get('languages', '') }}"
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="skills" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Skills
+                    (Extracted)</label>
+                <textarea id="skills" name="skills" rows="3"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white; resize: vertical;">{{ parsed_data.get('skills', '') }}</textarea>
+                <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Add or remove skills
+                    relevant to this offer.</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label for="experience" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Experience
+                    Summary</label>
+                <textarea id="experience" name="experience" rows="5"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white; resize: vertical;">{{ parsed_data.get('experience', '') }}</textarea>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button type="submit" class="btn"
+                    style="width: 100%; font-size: 1.1rem; padding: 16px; background: linear-gradient(135deg, #08d9d6, #03b0ad); color: white; border: none; font-weight: 600;">
+                    🚀 Submit Application
+                </button>
+                <a href="{{ url_for('apply_to_offer', offer_id=offer.id) }}" class="btn btn-outline"
+                    style="width: 100%; text-align: center;">Back to Upload</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
