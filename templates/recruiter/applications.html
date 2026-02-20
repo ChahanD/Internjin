@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    .match-tooltip-container:hover .match-tooltip {
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+</style>
+
 <div class="container page-with-header" style="min-height: 80vh; padding-bottom: 4rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <div>
@@ -13,12 +20,12 @@
     </div>
 
     <div
-        style="background: var(--color-card-bg); border-radius: 16px; border: 1px solid var(--color-border); box-shadow: var(--shadow-card); backdrop-filter: var(--backdrop-blur); overflow: hidden;">
+        style="background: var(--color-card-bg); border-radius: 16px; border: 1px solid var(--color-border); box-shadow: var(--shadow-card); backdrop-filter: var(--backdrop-blur); overflow: visible;">
         {% if applications %}
-        <div style="width: 100%; overflow-x: auto;">
+        <div style="width: 100%; overflow: visible; padding-bottom: 2rem;">
             <table style="width: 100%; border-collapse: collapse; text-align: left;">
                 <thead style="background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid var(--color-border);">
-                    <tr>
+                    <tr style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
                         <th style="padding: 1.5rem; font-weight: 500; color: #8892b0;">Candidate</th>
                         <th style="padding: 1.5rem; font-weight: 500; color: #8892b0;">Date</th>
                         <th style="padding: 1.5rem; font-weight: 500; color: #8892b0;">Compatibility</th>
@@ -38,20 +45,64 @@
                         </td>
                         <td style="padding: 1.5rem; color: var(--color-text-muted);">{{
                             app.created_at.strftime('%Y-%m-%d') }}</td>
-                        <td style="padding: 1.5rem;">
-                            {% if app.compatibility_score >= 80 %}
-                            <span
-                                style="background: rgba(8, 217, 214, 0.1); color: var(--color-secondary); padding: 4px 12px; border-radius: 20px; font-weight: bold;">{{
-                                app.compatibility_score }}%</span>
-                            {% elif app.compatibility_score >= 50 %}
-                            <span
-                                style="background: rgba(255, 255, 255, 0.1); color: var(--color-text); padding: 4px 12px; border-radius: 20px; font-weight: bold;">{{
-                                app.compatibility_score }}%</span>
-                            {% else %}
-                            <span
-                                style="background: rgba(255, 46, 99, 0.1); color: var(--color-primary); padding: 4px 12px; border-radius: 20px; font-weight: bold;">{{
-                                app.compatibility_score }}%</span>
-                            {% endif %}
+                        <td style="padding: 1.5rem; position: relative;">
+                            <div class="match-tooltip-container"
+                                style="display: inline-block; position: relative; cursor: help;">
+                                {% if app.compatibility_score >= 80 %}
+                                <span
+                                    style="background: rgba(8, 217, 214, 0.1); color: var(--color-secondary); padding: 4px 12px; border-radius: 20px; font-weight: bold;">
+                                    {{ app.compatibility_score }}%
+                                </span>
+                                {% elif app.compatibility_score >= 50 %}
+                                <span
+                                    style="background: rgba(255, 255, 255, 0.1); color: var(--color-text); padding: 4px 12px; border-radius: 20px; font-weight: bold;">
+                                    {{ app.compatibility_score }}%
+                                </span>
+                                {% else %}
+                                <span
+                                    style="background: rgba(255, 46, 99, 0.1); color: var(--color-primary); padding: 4px 12px; border-radius: 20px; font-weight: bold;">
+                                    {{ app.compatibility_score }}%
+                                </span>
+                                {% endif %}
+
+                                {% if app.match_details %}
+                                <div class="match-tooltip"
+                                    style="position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background: var(--color-bg); border: 1px solid var(--color-border); padding: 1rem; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; min-width: 250px; opacity: 0; visibility: hidden; transition: all 0.2s ease;">
+                                    <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--color-text);">
+                                        Détail des compétences</h4>
+
+                                    {% if app.match_details.matched %}
+                                    <div style="margin-bottom: 0.5rem;">
+                                        <div
+                                            style="font-size: 0.8rem; color: var(--color-secondary); margin-bottom: 0.2rem;">
+                                            ✅ En commun:</div>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                            {% for skill in app.match_details.matched %}
+                                            <span
+                                                style="font-size: 0.75rem; background: rgba(8,217,214,0.1); color: var(--color-secondary); padding: 2px 6px; border-radius: 4px;">{{
+                                                skill }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if app.match_details.missing %}
+                                    <div>
+                                        <div
+                                            style="font-size: 0.8rem; color: var(--color-primary); margin-bottom: 0.2rem;">
+                                            ❌ Manquantes:</div>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                            {% for skill in app.match_details.missing %}
+                                            <span
+                                                style="font-size: 0.75rem; background: rgba(255,46,99,0.1); color: var(--color-primary); padding: 2px 6px; border-radius: 4px;">{{
+                                                skill }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
                         </td>
                         <td style="padding: 1.5rem;">
                             {% if app.status == 'pending' or app.status == 'viewed' %}

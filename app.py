@@ -247,6 +247,7 @@ def new_offer():
         start_date = request.form.get('start_date')
         description = request.form.get('description')
         tags = request.form.get('tags')
+        required_skills = request.form.get('required_skills')
         
         pdf_filename = None
         if 'pdf_file' in request.files:
@@ -266,6 +267,7 @@ def new_offer():
             duration=duration,
             description=description,
             tags=tags,
+            required_skills=required_skills,
             pdf_filename=pdf_filename,
             start_date=start_date,
             recruiter_id=current_user.id
@@ -297,6 +299,7 @@ def edit_offer(offer_id):
         offer.start_date = request.form.get('start_date')
         offer.description = request.form.get('description')
         offer.tags = request.form.get('tags')
+        offer.required_skills = request.form.get('required_skills')
         
         if 'pdf_file' in request.files:
             file = request.files['pdf_file']
@@ -315,6 +318,41 @@ def edit_offer(offer_id):
                         
                 offer.pdf_filename = filename
         
+        # Recalculate compatibility scores for all existing applications of this offer
+        for app_record in offer.applications:
+            import json
+            try:
+                final_data = json.loads(app_record.extracted_data)
+                
+                compatibility_score = 0.0
+                if offer.required_skills:
+                    req_skills = [s.strip().lower() for s in offer.required_skills.split(',') if s.strip()]
+                    student_skills_raw = final_data.get('skills') or ''
+                    student_skills = [s.strip().lower() for s in student_skills_raw.split(',') if s.strip()]
+                    experience_text = (final_data.get('experience') or '').lower()
+                    
+                    if req_skills:
+                        match_count = 0
+                        for rs in req_skills:
+                            if rs in student_skills or rs in experience_text:
+                                match_count += 1
+                        compatibility_score = (match_count / len(req_skills)) * 100
+                else:
+                    offer_text = ((offer.title or "") + " " + (offer.description or "") + " " + (offer.tags or "")).lower()
+                    student_text = ((final_data.get('skills') or '') + " " + (final_data.get('experience') or '')).lower()
+                    
+                    offer_words = set(offer_text.split())
+                    student_words = set(student_text.split())
+                    
+                    overlap = offer_words.intersection(student_words)
+                    if len(offer_words) > 0:
+                        compatibility_score = min(len(overlap) / (len(offer_words) * 0.1) * 100, 100.0)
+                        
+                app_record.compatibility_score = round(compatibility_score, 1)
+            except Exception as e:
+                # If JSON parsing fails, just leave the score as is
+                pass
+                
         db.session.commit()
         flash('Offer updated successfully!')
         return redirect(url_for('recruiter_dashboard'))
@@ -599,19 +637,39 @@ def confirm_application(offer_id):
         'experience': request.form.get('experience')
     }
     
-    # Calculate compatibility (Simple demo logic)
+    # Calculate compatibility based on required_skills
     compatibility_score = 0.0
-    offer_text = (offer.title + " " + (offer.description or "") + " " + (offer.tags or "")).lower()
-    student_text = (final_data['skills'] + " " + final_data['experience']).lower()
     
-    # Check for overlapping words (very naive)
-    offer_words = set(offer_text.split())
-    student_words = set(student_text.split())
-    
-    overlap = offer_words.intersection(student_words)
-    # Avoid division by zero
-    if len(offer_words) > 0:
-        compatibility_score = min(len(overlap) / (len(offer_words) * 0.1) * 100, 100.0) # Assume 10% overlap is "perfect" for this demo
+    if offer.required_skills:
+        # Split and clean required skills (e.g. "Python, AWS, React")
+        req_skills = [s.strip().lower() for s in offer.required_skills.split(',') if s.strip()]
+        
+        # Extract student skills (comma separated from the parser, or manually entered)
+        student_skills_raw = final_data.get('skills') or ''
+        student_skills = [s.strip().lower() for s in student_skills_raw.split(',') if s.strip()]
+        
+        experience_text = (final_data.get('experience') or '').lower()
+        
+        if req_skills:
+            match_count = 0
+            for rs in req_skills:
+                # Check if the required skill is exactly in the student's skills list
+                # Or if the required skill is a substring of the student's free text experience
+                if rs in student_skills or rs in experience_text:
+                    match_count += 1
+            
+            compatibility_score = (match_count / len(req_skills)) * 100
+    else:
+        # Fallback to naive logic if recruiter didn't provide required skills
+        offer_text = ((offer.title or "") + " " + (offer.description or "") + " " + (offer.tags or "")).lower()
+        student_text = ((final_data.get('skills') or '') + " " + (final_data.get('experience') or '')).lower()
+        
+        offer_words = set(offer_text.split())
+        student_words = set(student_text.split())
+        
+        overlap = offer_words.intersection(student_words)
+        if len(offer_words) > 0:
+            compatibility_score = min(len(overlap) / (len(offer_words) * 0.1) * 100, 100.0)
     
     application = Application(
         student_id=current_user.id,
@@ -650,6 +708,33 @@ def view_offer_applications(offer_id):
         return redirect(url_for('recruiter_dashboard'))
         
     applications = Application.query.filter_by(offer_id=offer_id).order_by(Application.created_at.desc()).all()
+    
+    # Calculate match details for each application to display in a tooltip
+    if offer.required_skills:
+        req_skills = [s.strip().lower() for s in offer.required_skills.split(',') if s.strip()]
+        for app_record in applications:
+            import json
+            try:
+                final_data = json.loads(app_record.extracted_data)
+                student_skills_raw = final_data.get('skills') or ''
+                student_skills = [s.strip().lower() for s in student_skills_raw.split(',') if s.strip()]
+                experience_text = (final_data.get('experience') or '').lower()
+                
+                matched = []
+                missing = []
+                for rs in req_skills:
+                    if rs in student_skills or rs in experience_text:
+                        matched.append(rs.title())
+                    else:
+                        missing.append(rs.title())
+                
+                app_record.match_details = {
+                    'matched': matched,
+                    'missing': missing
+                }
+            except Exception:
+                app_record.match_details = None
+    
     return render_template('recruiter/applications.html', offer=offer, applications=applications)
 
 @app.route('/recruiter/application/<int:application_id>')
@@ -670,6 +755,30 @@ def view_application(application_id):
     #     db.session.commit()
         
     return render_template('recruiter/application_detail.html', application=application)
+
+@app.route('/student/application/<int:application_id>/delete', methods=['POST'])
+@login_required
+def delete_application(application_id):
+    if current_user.role != 'student':
+        flash('Access denied.')
+        return redirect(url_for('index'))
+        
+    application = Application.query.get_or_404(application_id)
+    
+    # Ensure the application belongs to the current user
+    if application.student_id != current_user.id:
+        flash('You can only delete your own applications.')
+        return redirect(url_for('student_applications'))
+        
+    # Optional: Prevent deletion if status is already accepted
+    # if application.status == 'accepted':
+    #     flash('Cannot delete an accepted application.')
+    #     return redirect(url_for('student_applications'))
+        
+    db.session.delete(application)
+    db.session.commit()
+    flash('Application deleted successfully.')
+    return redirect(url_for('student_applications'))
 
 if __name__ == '__main__':
     with app.app_context():

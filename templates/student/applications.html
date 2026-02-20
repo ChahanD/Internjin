@@ -41,9 +41,18 @@
                 {% endif %}
 
                 <a href="{{ url_for('static', filename='uploads/cvs/' + app.cv_filename) }}" target="_blank"
-                    style="font-size: 0.85rem; color: var(--color-text-muted); text-decoration: underline;">
+                    style="font-size: 0.85rem; color: var(--color-text-muted); text-decoration: underline; margin-bottom: 0.5rem; display: block;">
                     <i class="fas fa-file-pdf"></i> View Submitted CV
                 </a>
+
+                <form action="{{ url_for('delete_application', application_id=app.id) }}" method="POST"
+                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette candidature ?');"
+                    style="margin: 0;">
+                    <button type="submit"
+                        style="background: none; border: none; color: rgba(255, 46, 99, 0.8); cursor: pointer; font-size: 0.85rem; text-decoration: underline; padding: 0;">
+                        <i class="fas fa-trash"></i> Supprimer la candidature
+                    </button>
+                </form>
             </div>
         </div>
         {% endfor %}

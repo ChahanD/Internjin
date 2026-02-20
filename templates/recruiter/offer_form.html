@@ -55,6 +55,13 @@
                     style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
             </div>
             <div style="margin-bottom: 1.5rem;">
+                <label for="required_skills" style="display: block; margin-bottom: 0.5rem;">Compétences Requises
+                    (séparées par des virgules)</label>
+                <input type="text" id="required_skills" name="required_skills"
+                    value="{{ offer.required_skills if offer else '' }}" placeholder="ex: Python, React, Vue, SEO"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); background: rgba(255,255,255,0.05); color: white;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
                 <label for="pdf_file" style="display: block; margin-bottom: 0.5rem;">Fichier PDF de l'offre
                     (Optionnel)</label>
                 <input type="file" id="pdf_file" name="pdf_file" accept=".pdf"
