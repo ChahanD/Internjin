@@ -84,6 +84,7 @@
                             <li><a href="{{ url_for('recruiter_dashboard') }}">Dashboard</a></li>
                             {% elif current_user.role == 'student' %}
                             <li><a href="{{ url_for('student_profile') }}">My Profile</a></li>
+                            <li><a href="{{ url_for('student_applications') }}">My Applications</a></li>
                             {% endif %}
                             <li><a href="#">Settings</a></li>
                             <li><a href="/logout">Logout</a></li>

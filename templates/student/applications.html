@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="padding-top: 160px; padding-bottom: 4rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 style="font-size: 2rem;">My Applications</h2>
+        <a href="{{ url_for('offers') }}" class="btn btn-outline">Explore More Offers</a>
+    </div>
+
+    {% if applications %}
+    <div style="display: grid; gap: 1.5rem;">
+        {% for app in applications %}
+        <div
+            style="background: var(--color-card-bg); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-card); backdrop-filter: var(--backdrop-blur);">
+            <div>
+                <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">
+                    <a href="{{ url_for('offer_detail', offer_id=app.offer.id) }}"
+                        style="color: var(--color-primary); text-decoration: none;">
+                        {{ app.offer.title }}
+                    </a>
+                </h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 0.5rem;">
+                    🏢 {{ app.offer.company }} • 📍 {{ app.offer.location }}
+                </p>
+                <div style="font-size: 0.9rem; color: #8892b0;">
+                    <span>📅 Applied on {{ app.created_at.strftime('%Y-%m-%d') }}</span>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+                {% if app.status == 'pending' or app.status == 'viewed' %}
+                <span
+                    style="background: rgba(255, 255, 255, 0.1); color: var(--color-text); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 500;">
+                    🕒 Pending
+                </span>
+                {% else %}
+                <span
+                    style="background: rgba(255, 46, 99, 0.1); color: var(--color-primary); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 500;">
+                    {{ app.status|title }}
+                </span>
+                {% endif %}
+
+                <a href="{{ url_for('static', filename='uploads/cvs/' + app.cv_filename) }}" target="_blank"
+                    style="font-size: 0.85rem; color: var(--color-text-muted); text-decoration: underline;">
+                    <i class="fas fa-file-pdf"></i> View Submitted CV
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div
+        style="text-align: center; padding: 4rem; background: var(--color-card-bg); border-radius: 16px; border: 1px solid var(--color-border); box-shadow: var(--shadow-card); backdrop-filter: var(--backdrop-blur);">
+        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--color-text-muted);">📁</div>
+        <h3 style="margin-bottom: 1rem;">No applications yet</h3>
+        <p style="color: var(--color-text-muted); margin-bottom: 2rem;">
+            You haven't applied to any offers yet. Start exploring jobs!
+        </p>
+        <a href="{{ url_for('offers') }}" class="btn btn-primary" style="padding: 14px 32px;">Browse Offers</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,69 +1,174 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Candidate Profile</h5>
-                </div>
-                <div class="card-body text-center">
-                    <div class="display-1 text-secondary mb-3">
-                        <i class="fas fa-user-circle"></i>
-                    </div>
-                    {% set data = application.extracted_data | from_json %}
-                    <h4>{{ data.get('name', application.student.name) }}</h4>
-                    <p class="text-muted">{{ data.get('email', application.student.email) }}</p>
+<div class="container page-with-header" style="min-height: 80vh; padding-bottom: 4rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Application Details</h2>
+            <p style="color: var(--color-text-muted);">Review candidate profile for <span
+                    style="color: var(--color-primary); font-weight: 500;">{{ application.offer.title }}</span></p>
+        </div>
+        <a href="{{ url_for('view_offer_applications', offer_id=application.offer_id) }}" class="btn btn-outline"
+            style="padding: 10px 20px;">
+            <i class="fas fa-arrow-left me-2"></i> Back to Applicants
+        </a>
+    </div>
 
-                    <hr>
+    {% set data = application.extracted_data | from_json %}
 
-                    <div class="d-grid gap-2">
-                        <a href="{{ url_for('static', filename='uploads/cvs/' + application.cv_filename) }}"
-                            target="_blank" class="btn btn-outline-primary">
-                            <i class="fas fa-file-pdf me-2"></i> View Original CV
-                        </a>
-                    </div>
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+
+        <!-- Left Sidebar: Candidate Profile -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+            <div
+                style="background: var(--color-card-bg); border-radius: 16px; border: 1px solid var(--color-border); padding: 2rem; text-align: center; box-shadow: var(--shadow-card); backdrop-filter: var(--backdrop-blur);">
+                <div style="font-size: 4rem; color: #8892b0; margin-bottom: 1rem;">
+                    <i class="fas fa-user-circle"></i>
                 </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--color-text);">{{ data.get('name',
+                    application.student.name) }}</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 0.5rem;">
+                    <i class="fas fa-envelope me-2"></i>{{ data.get('email', application.student.email) }}
+                </p>
+                {% if data.get('phone') %}
+                <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">
+                    <i class="fas fa-phone me-2"></i>{{ data.get('phone') }}
+                </p>
+                {% endif %}
+
+                <hr style="border-color: rgba(255,255,255,0.05); margin: 1.5rem 0;">
+
+                <a href="{{ url_for('static', filename='uploads/cvs/' + application.cv_filename) }}" target="_blank"
+                    class="btn btn-primary"
+                    style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i class="fas fa-file-pdf"></i> View Original CV
+                </a>
             </div>
 
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Status</h5>
+            <div
+                style="background: var(--color-card-bg); border-radius: 16px; border: 1px solid var(--color-border); padding: 2rem; box-shadow: var(--shadow-card); backdrop-filter: var(--backdrop-blur);">
+                <h4
+                    style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--color-text); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">
+                    Application Status
+                </h4>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                    <span style="color: var(--color-text-muted);">Current:</span>
+                    {% if application.status == 'pending' %}
+                    <span
+                        style="background: rgba(255,255,255,0.1); color: var(--color-text); padding: 6px 16px; border-radius: 20px; font-weight: bold;">{{
+                        application.status|title }}</span>
+                    {% elif application.status == 'accepted' %}
+                    <span
+                        style="background: rgba(8, 217, 214, 0.1); color: var(--color-secondary); padding: 6px 16px; border-radius: 20px; font-weight: bold;">{{
+                        application.status|title }}</span>
+                    {% else %}
+                    <span
+                        style="background: rgba(255, 46, 99, 0.1); color: var(--color-primary); padding: 6px 16px; border-radius: 20px; font-weight: bold;">{{
+                        application.status|title }}</span>
+                    {% endif %}
                 </div>
-                <div class="card-body">
-                    <p class="mb-2">Current Status: <strong>{{ application.status|title }}</strong></p>
-                    <p class="text-muted small">Applied on {{ application.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
-                </div>
+                <p style="color: #8892b0; font-size: 0.85rem; text-align: right;">Applied on {{
+                    application.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
             </div>
+
         </div>
 
-        <div class="col-md-8">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Application Analysis</h5>
-                    <span class="badge bg-white text-primary fs-6">{{ application.compatibility_score }}% Match</span>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h6><i class="fas fa-briefcase me-2 text-primary"></i>Offer: {{ application.offer.title }}
-                            </h6>
-                        </div>
-                    </div>
+        <!-- Right Side: Application Analysis -->
+        <div
+            style="background: var(--color-card-bg); border-radius: 16px; border: 1px solid var(--color-border); padding: 2.5rem; box-shadow: var(--shadow-card); backdrop-filter: var(--backdrop-blur);">
 
-                    <h6 class="border-bottom pb-2 mb-3">Skills Analysis</h6>
-                    <div class="mb-4">
-                        <p class="mb-1 text-muted small">Extracted Skills:</p>
-                        <p>{{ data.get('skills', 'None detected') }}</p>
-                    </div>
-
-                    <h6 class="border-bottom pb-2 mb-3">Experience Summary</h6>
-                    <div class="bg-light p-3 rounded">
-                        {{ data.get('experience', 'No summary available.')|nl2br }}
-                    </div>
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <h4 style="font-size: 1.5rem; color: var(--color-text);">Extracted Information</h4>
+                <div
+                    style="background: rgba(8, 217, 214, 0.1); border: 1px solid rgba(8, 217, 214, 0.3); color: var(--color-secondary); padding: 8px 16px; border-radius: 8px; font-weight: bold;">
+                    {{ application.compatibility_score }}% Match
                 </div>
             </div>
+
+            <!-- New Extracted Fields -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+
+                <div>
+                    <h5 style="font-size: 1rem; color: #8892b0; margin-bottom: 0.5rem;"><i
+                            class="fas fa-graduation-cap me-2 text-primary"></i>Diploma / Education</h5>
+                    <p
+                        style="color: var(--color-text); font-weight: 500; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                        {{ data.get('diploma') or 'Not specified' }}
+                    </p>
+                </div>
+
+                <div>
+                    <h5 style="font-size: 1rem; color: #8892b0; margin-bottom: 0.5rem;"><i
+                            class="fab fa-github me-2 text-primary"></i>GitHub</h5>
+                    {% if data.get('github') %}
+                    <a href="{{ data.get('github') }}" target="_blank"
+                        style="display: block; color: var(--color-secondary); background: rgba(8, 217, 214, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(8, 217, 214, 0.2); word-break: break-all;">
+                        {{ data.get('github') }}
+                    </a>
+                    {% else %}
+                    <p
+                        style="color: var(--color-text-muted); background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                        Not specified
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <h5 style="font-size: 1rem; color: #8892b0; margin-bottom: 0.5rem;"><i
+                            class="fas fa-globe me-2 text-primary"></i>Nationality</h5>
+                    <p
+                        style="color: var(--color-text); font-weight: 500; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                        {{ data.get('nationality') or 'Not specified' }}
+                    </p>
+                </div>
+
+                <div>
+                    <h5 style="font-size: 1rem; color: #8892b0; margin-bottom: 0.5rem;"><i
+                            class="fas fa-language me-2 text-primary"></i>Languages</h5>
+                    <p
+                        style="color: var(--color-text); font-weight: 500; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                        {{ data.get('languages') or 'Not specified' }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Existing Extracted Fields -->
+            <div style="margin-bottom: 2rem;">
+                <h5
+                    style="font-size: 1rem; color: #8892b0; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">
+                    <i class="fas fa-tools me-2 text-primary"></i>Skills Analysis
+                </h5>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
+                    {% if data.get('skills') %}
+                    {% for skill in data.get('skills').split(',') %}
+                    <span
+                        style="background: rgba(255, 46, 99, 0.1); color: var(--color-primary); padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; font-weight: 500; border: 1px solid rgba(255, 46, 99, 0.2);">
+                        {{ skill.strip() }}
+                    </span>
+                    {% endfor %}
+                    {% else %}
+                    <p style="color: var(--color-text-muted);">No skills detected</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <h5
+                    style="font-size: 1rem; color: #8892b0; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">
+                    <i class="fas fa-file-alt me-2 text-primary"></i>Experience Summary
+                </h5>
+                <div
+                    style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); color: var(--color-text); line-height: 1.6;">
+                    {% if data.get('experience') %}
+                    {{ data.get('experience') }}
+                    {% else %}
+                    <span style="color: var(--color-text-muted); font-style: italic;">No summary available.</span>
+                    {% endif %}
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

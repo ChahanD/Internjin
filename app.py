@@ -36,6 +36,15 @@ import json
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+@app.template_filter('from_json')
+def from_json_filter(value):
+    if not value:
+        return {}
+    try:
+        return json.loads(value)
+    except:
+        return {}
+
 @app.context_processor
 def inject_globals():
     if current_user.is_authenticated:
@@ -616,8 +625,17 @@ def confirm_application(offer_id):
     db.session.add(application)
     db.session.commit()
     
-    flash('Application submitted successfully!')
-    return redirect(url_for('offer_detail', offer_id=offer_id))
+    return render_template('student/apply_success.html', offer=offer)
+
+@app.route('/student/applications')
+@login_required
+def student_applications():
+    if current_user.role != 'student':
+        flash('Access denied.')
+        return redirect(url_for('index'))
+        
+    applications = Application.query.filter_by(student_id=current_user.id).order_by(Application.created_at.desc()).all()
+    return render_template('student/applications.html', applications=applications)
 
 @app.route('/recruiter/offer/<int:offer_id>/applications')
 @login_required
@@ -646,10 +664,10 @@ def view_application(application_id):
         flash('Access denied.')
         return redirect(url_for('recruiter_dashboard'))
         
-    # Mark as viewed if pending
-    if application.status == 'pending':
-        application.status = 'viewed'
-        db.session.commit()
+    # We no longer mark as viewed to keep it hidden from the student
+    # if application.status == 'pending':
+    #     application.status = 'viewed'
+    #     db.session.commit()
         
     return render_template('recruiter/application_detail.html', application=application)
 

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container"
+    style="padding-top: 160px; padding-bottom: 4rem; min-height: 80vh; display: flex; align-items: center; justify-content: center;">
+    <div
+        style="background: var(--color-card-bg); padding: 3rem; border-radius: 16px; border: 1px solid var(--color-border); max-width: 500px; text-align: center; box-shadow: var(--shadow-card); backdrop-filter: var(--backdrop-blur);">
+
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Application Submitted!</h2>
+        <p style="color: var(--color-text-muted); margin-bottom: 2rem;">
+            Your application for <strong>{{ offer.title }}</strong> at <strong>{{ offer.company }}</strong> has been
+            successfully sent to the recruiter.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <a href="{{ url_for('student_applications') }}" class="btn"
+                style="width: 100%; font-size: 1.1rem; padding: 16px; background: linear-gradient(135deg, #08d9d6, #03b0ad); color: white; border: none; font-weight: 600;">
+                <i class="fas fa-folder-open me-2"></i> View My Applications
+            </a>
+            <a href="{{ url_for('offers') }}" class="btn btn-outline" style="width: 100%;">
+                Browse More Offers
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

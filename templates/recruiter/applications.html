@@ -1,72 +1,86 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row mb-4">
-        <div class="col">
-            <h2>Applicants for: {{ offer.title }}</h2>
-            <a href="{{ url_for('recruiter_dashboard') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
-            </a>
+<div class="container page-with-header" style="min-height: 80vh; padding-bottom: 4rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Applicants for: <span
+                    style="color: var(--color-primary);">{{ offer.title }}</span></h2>
         </div>
+        <a href="{{ url_for('recruiter_dashboard') }}" class="btn btn-outline" style="padding: 10px 20px;">
+            <i class="fas fa-arrow-left me-2"></i> Dashboard
+        </a>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            {% if applications %}
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4">Candidate</th>
-                            <th>Date</th>
-                            <th>Compatibility</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for app in applications %}
-                        {% set data = app.extracted_data | from_json %}
-                        <tr>
-                            <td class="ps-4">
-                                <div class="fw-bold">{{ data.get('name', app.student.name) }}</div>
-                                <div class="text-muted small">{{ data.get('email', app.student.email) }}</div>
-                            </td>
-                            <td>{{ app.created_at.strftime('%Y-%m-%d') }}</td>
-                            <td>
-                                {% if app.compatibility_score >= 80 %}
-                                <span class="badge bg-success">{{ app.compatibility_score }}%</span>
-                                {% elif app.compatibility_score >= 50 %}
-                                <span class="badge bg-warning text-dark">{{ app.compatibility_score }}%</span>
-                                {% else %}
-                                <span class="badge bg-secondary">{{ app.compatibility_score }}%</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span
-                                    class="badge rounded-pill bg-{{ 'info' if app.status == 'pending' else 'success' if app.status == 'accepted' else 'danger' }}">
-                                    {{ app.status|title }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{{ url_for('view_application', application_id=app.id) }}"
-                                    class="btn btn-sm btn-primary">
-                                    View Details
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="p-5 text-center text-muted">
-                <i class="fas fa-users fa-3x mb-3"></i>
-                <p>No applications yet.</p>
-            </div>
-            {% endif %}
+    <div
+        style="background: var(--color-card-bg); border-radius: 16px; border: 1px solid var(--color-border); box-shadow: var(--shadow-card); backdrop-filter: var(--backdrop-blur); overflow: hidden;">
+        {% if applications %}
+        <div style="width: 100%; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead style="background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid var(--color-border);">
+                    <tr>
+                        <th style="padding: 1.5rem; font-weight: 500; color: #8892b0;">Candidate</th>
+                        <th style="padding: 1.5rem; font-weight: 500; color: #8892b0;">Date</th>
+                        <th style="padding: 1.5rem; font-weight: 500; color: #8892b0;">Compatibility</th>
+                        <th style="padding: 1.5rem; font-weight: 500; color: #8892b0;">Status</th>
+                        <th style="padding: 1.5rem; font-weight: 500; color: #8892b0;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    {% set data = app.extracted_data | from_json %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;">
+                        <td style="padding: 1.5rem;">
+                            <div style="font-weight: 600; font-size: 1.1rem; color: var(--color-text);">{{
+                                data.get('name', app.student.name) }}</div>
+                            <div style="color: var(--color-text-muted); font-size: 0.9rem;">{{ data.get('email',
+                                app.student.email) }}</div>
+                        </td>
+                        <td style="padding: 1.5rem; color: var(--color-text-muted);">{{
+                            app.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td style="padding: 1.5rem;">
+                            {% if app.compatibility_score >= 80 %}
+                            <span
+                                style="background: rgba(8, 217, 214, 0.1); color: var(--color-secondary); padding: 4px 12px; border-radius: 20px; font-weight: bold;">{{
+                                app.compatibility_score }}%</span>
+                            {% elif app.compatibility_score >= 50 %}
+                            <span
+                                style="background: rgba(255, 255, 255, 0.1); color: var(--color-text); padding: 4px 12px; border-radius: 20px; font-weight: bold;">{{
+                                app.compatibility_score }}%</span>
+                            {% else %}
+                            <span
+                                style="background: rgba(255, 46, 99, 0.1); color: var(--color-primary); padding: 4px 12px; border-radius: 20px; font-weight: bold;">{{
+                                app.compatibility_score }}%</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1.5rem;">
+                            {% if app.status == 'pending' or app.status == 'viewed' %}
+                            <span style="color: var(--color-text); font-size: 0.9rem;">🕒 Pending</span>
+                            {% elif app.status == 'accepted' %}
+                            <span style="color: #00d2ff; font-size: 0.9rem;">✅ Accepted</span>
+                            {% else %}
+                            <span style="color: var(--color-primary); font-size: 0.9rem;">❌ {{ app.status|title
+                                }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1.5rem;">
+                            <a href="{{ url_for('view_application', application_id=app.id) }}" class="btn"
+                                style="padding: 8px 16px; font-size: 0.9rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+        {% else %}
+        <div style="text-align: center; padding: 4rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem; color: rgba(255,255,255,0.1);">👥</div>
+            <h3 style="margin-bottom: 0.5rem; color: var(--color-text-muted);">No applications yet</h3>
+            <p style="color: #8892b0;">Candidates haven't applied to this offer yet.</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
