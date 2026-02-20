@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
 
-{% block title %}Internship Offers | Internjin{% endblock %}
+{% block title %}{{ _('Offres de Stage | Internjin') }}{% endblock %}
 
 {% block content %}
 <div class="container" style="padding-top: 160px; padding-bottom: 4rem;">
-    <h1 style="text-align: center; margin-bottom: 3rem;">Latest Opportunities</h1>
+    <h1 style="text-align: center; margin-bottom: 3rem;">{{ _('Dernières Opportunités') }}</h1>
 
     <div style="display: grid; grid-template-columns: 250px 1fr; gap: 2rem;">
         <!-- Sidebar Filters -->
         <aside
             style="background: var(--color-card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--color-border); height: fit-content;">
             <form action="{{ url_for('offers') }}" method="GET">
-                <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">Filters</h3>
+                <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">{{ _('Filtres') }}</h3>
 
                 <div style="margin-bottom: 1.5rem;">
-                    <h4 style="font-size: 0.9rem; color: #8892b0; margin-bottom: 0.5rem;">Duration</h4>
+                    <h4 style="font-size: 0.9rem; color: #8892b0; margin-bottom: 0.5rem;">{{ _('Durée') }}</h4>
                     {% for duration in unique_durations %}
                     <label style="display: block; margin-bottom: 0.5rem; cursor: pointer;">
                         <input type="checkbox" name="duration" value="{{ duration }}" {% if duration in
@@ -25,7 +25,7 @@
                 </div>
 
                 <div style="margin-bottom: 1.5rem;">
-                    <h4 style="font-size: 0.9rem; color: #8892b0; margin-bottom: 0.5rem;">Company</h4>
+                    <h4 style="font-size: 0.9rem; color: #8892b0; margin-bottom: 0.5rem;">{{ _('Entreprise') }}</h4>
                     {% for company in unique_companies %}
                     <label style="display: block; margin-bottom: 0.5rem; cursor: pointer;">
                         <input type="checkbox" name="company" value="{{ company }}" {% if company in selected_companies
@@ -35,7 +35,7 @@
                 </div>
 
                 <div style="margin-bottom: 1.5rem;">
-                    <h4 style="font-size: 0.9rem; color: #8892b0; margin-bottom: 0.5rem;">Location</h4>
+                    <h4 style="font-size: 0.9rem; color: #8892b0; margin-bottom: 0.5rem;">{{ _('Localisation') }}</h4>
                     {% for location in unique_locations %}
                     <label style="display: block; margin-bottom: 0.5rem; cursor: pointer;">
                         <input type="checkbox" name="location" value="{{ location }}" {% if location in
@@ -45,11 +45,12 @@
                     {% endfor %}
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 8px;">Apply Filters</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 8px;">{{ _('Appliquer les
+                    Filtres') }}</button>
                 {% if selected_locations or selected_durations or selected_companies %}
                 <a href="{{ url_for('offers') }}"
-                    style="display: block; text-align: center; margin-top: 0.5rem; font-size: 0.9rem; color: var(--color-text-muted);">Clear
-                    Filters</a>
+                    style="display: block; text-align: center; margin-top: 0.5rem; font-size: 0.9rem; color: var(--color-text-muted);">{{
+                    _('Effacer les Filtres') }}</a>
                 {% endif %}
             </form>
         </aside>
@@ -80,7 +81,7 @@
                     </div>
                 </div>
                 <a href="{{ url_for('offer_detail', offer_id=offer.id) }}" class="btn btn-outline"
-                    style="font-size: 0.9rem;">View Details</a>
+                    style="font-size: 0.9rem;">{{ _('Voir les Détails') }}</a>
             </div>
             {% endfor %}
         </div>

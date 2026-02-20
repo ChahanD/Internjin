@@ -23,10 +23,12 @@
         style="background: #05070c; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); position: fixed; width: 100%; top: 0; z-index: 101;">
         <div class="container" style="display: flex; justify-content: flex-end; gap: 1rem; font-size: 0.8rem;">
             <a href="/switch_role/student"
-                style="color: {{ 'var(--color-primary)' if role == 'student' else '#8892b0' }}; font-weight: {{ 'bold' if role == 'student' else 'normal' }};">Student</a>
+                style="color: {{ 'var(--color-primary)' if role == 'student' else '#8892b0' }}; font-weight: {{ 'bold' if role == 'student' else 'normal' }};">{{
+                _('Étudiant') }}</a>
             <span style="color: #2a3b55;">|</span>
             <a href="/switch_role/recruiter"
-                style="color: {{ 'var(--color-primary)' if role == 'recruiter' else '#8892b0' }}; font-weight: {{ 'bold' if role == 'recruiter' else 'normal' }};">Recruiter</a>
+                style="color: {{ 'var(--color-primary)' if role == 'recruiter' else '#8892b0' }}; font-weight: {{ 'bold' if role == 'recruiter' else 'normal' }};">{{
+                _('Recruteur') }}</a>
         </div>
     </div>
     {% endif %}
@@ -42,35 +44,35 @@
 
                 <ul class="nav-links">
                     {% if role == 'student' %}
-                    <li><a href="/offers">Offers</a></li>
-                    <li><a href="/companies">Companies</a></li>
+                    <li><a href="/offers">{{ _('Offres') }}</a></li>
+                    <li><a href="/companies">{{ _('Entreprises') }}</a></li>
                     {% else %}
-                    <li><a href="/companies/solutions">Solutions</a></li>
-                    <li><a href="/companies/packs">Our Packs</a></li>
+                    <li><a href="/companies/solutions">{{ _('Solutions') }}</a></li>
+                    <li><a href="/companies/packs">{{ _('Nos Packs') }}</a></li>
                     {% endif %}
                 </ul>
 
                 <div style="display: flex; gap: 1rem; align-items: center;">
                     {% if role == 'recruiter' %}
                     <div class="dropdown">
-                        <a href="#" class="dropdown-toggle">Français ▾</a>
+                        <a href="#" class="dropdown-toggle">{% if lang == 'en' %}English{% else %}Français{% endif %}
+                            ▾</a>
                         <ul class="dropdown-menu">
                             <li><a href="{{ url_for('set_language', lang='fr') }}">Français</a></li>
                             <li><a href="{{ url_for('set_language', lang='en') }}">English</a></li>
-                            <li><a href="{{ url_for('set_language', lang='jp') }}">日本語</a></li>
                         </ul>
                     </div>
-                    <a href="/contact" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">Contact
-                        Us</a>
+                    <a href="/contact" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">{{ _('Nous
+                        Contacter') }}</a>
                     {% endif %}
 
                     {% if role == 'student' %}
                     <div class="dropdown">
-                        <a href="#" class="dropdown-toggle">Français ▾</a>
+                        <a href="#" class="dropdown-toggle">{% if lang == 'en' %}English{% else %}Français{% endif %}
+                            ▾</a>
                         <ul class="dropdown-menu">
                             <li><a href="{{ url_for('set_language', lang='fr') }}">Français</a></li>
                             <li><a href="{{ url_for('set_language', lang='en') }}">English</a></li>
-                            <li><a href="{{ url_for('set_language', lang='jp') }}">日本語</a></li>
                         </ul>
                     </div>
                     {% endif %}
@@ -81,17 +83,18 @@
                             ▾</a>
                         <ul class="dropdown-menu">
                             {% if current_user.role == 'recruiter' %}
-                            <li><a href="{{ url_for('recruiter_dashboard') }}">Dashboard</a></li>
+                            <li><a href="{{ url_for('recruiter_dashboard') }}">{{ _('Tableau de bord') }}</a></li>
                             {% elif current_user.role == 'student' %}
-                            <li><a href="{{ url_for('student_profile') }}">My Profile</a></li>
-                            <li><a href="{{ url_for('student_applications') }}">My Applications</a></li>
+                            <li><a href="{{ url_for('student_profile') }}">{{ _('Mon Profil') }}</a></li>
+                            <li><a href="{{ url_for('student_applications') }}">{{ _('Mes Candidatures') }}</a></li>
                             {% endif %}
-                            <li><a href="#">Settings</a></li>
-                            <li><a href="/logout">Logout</a></li>
+                            <li><a href="#">{{ _('Paramètres') }}</a></li>
+                            <li><a href="/logout">{{ _('Déconnexion') }}</a></li>
                         </ul>
                     </div>
                     {% else %}
-                    <a href="/login" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">Login</a>
+                    <a href="/login" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">{{
+                        _('Connexion') }}</a>
                     {% endif %}
                 </div>
             </nav>

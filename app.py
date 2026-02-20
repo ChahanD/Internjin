@@ -27,6 +27,16 @@ db.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+# Setup Flask-Babel for translation
+from flask_babel import Babel, _
+app.config['BABEL_DEFAULT_LOCALE'] = 'fr'
+app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations'
+
+def get_locale():
+    return session.get('lang', 'fr')
+
+babel = Babel(app, locale_selector=get_locale)
+
 # Import models after db init to avoid circular imports
 from models import User, Offer, Application
 from pypdf import PdfReader
@@ -54,12 +64,12 @@ def inject_globals():
         
     return dict(
         role=role,
-        lang=session.get('lang', 'en')
+        lang=session.get('lang', 'fr')
     )
 
 @app.route('/set_language/<lang>')
 def set_language(lang):
-    if lang in ['en', 'fr', 'jp']:
+    if lang in ['en', 'fr']:
         session['lang'] = lang
     return redirect(request.referrer or url_for('index'))
 
@@ -753,8 +763,27 @@ def view_application(application_id):
     # if application.status == 'pending':
     #     application.status = 'viewed'
     #     db.session.commit()
-        
-    return render_template('recruiter/application_detail.html', application=application)
+    # Calculate which of the candidate's skills match the offer's required skills
+    matched_skills_lower = []
+    if application.offer.required_skills:
+        req_skills = [s.strip().lower() for s in application.offer.required_skills.split(',') if s.strip()]
+        if req_skills:
+            import json
+            try:
+                final_data = json.loads(application.extracted_data)
+                student_skills_raw = final_data.get('skills') or ''
+                student_skills = [s.strip() for s in student_skills_raw.split(',') if s.strip()]
+                
+                for ss in student_skills:
+                    ss_lower = ss.lower()
+                    for rs in req_skills:
+                        if rs in ss_lower or ss_lower in rs:
+                            matched_skills_lower.append(ss_lower)
+                            break
+            except Exception:
+                pass
+                
+    return render_template('recruiter/application_detail.html', application=application, matched_skills_lower=matched_skills_lower)
 
 @app.route('/student/application/<int:application_id>/delete', methods=['POST'])
 @login_required
